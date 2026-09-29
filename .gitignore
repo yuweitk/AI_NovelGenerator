@@ -19,3 +19,8 @@ test.py
 uv.lock
 .python-version
 pyproject.toml
+# local patches & test artifacts
+*.bak_20260929
+*.bak2_20260929
+launch_test.log
+*.log

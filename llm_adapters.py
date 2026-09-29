@@ -25,10 +25,12 @@ def check_base_url(url: str) -> str:
         
     if url.endswith('#'):
         return url.rstrip('#')
-        
+
+    url = url.rstrip('/')
+
     if not re.search(r'/v\d+$', url):
         if '/v1' not in url:
-            url = url.rstrip('/') + '/v1'
+            url = url + '/v1'
     return url
 
 class BaseLLMAdapter:

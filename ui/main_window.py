@@ -51,6 +51,9 @@ class NovelGeneratorGUI:
             pass
         self.master.geometry("1350x840")
 
+        # 关闭窗口时自动保存小说参数到 config.json
+        self.master.protocol("WM_DELETE_WINDOW", self._on_close)
+
         # --------------- 配置文件路径 ---------------
         self.config_file = "config.json"
         self.loaded_config = load_config(self.config_file)
@@ -439,3 +442,51 @@ class NovelGeneratorGUI:
     test_llm_config = test_llm_config
     test_embedding_config = test_embedding_config
     browse_folder = browse_folder
+
+    # ----------------- 小说参数持久化 -----------------
+    def save_novel_params_to_config(self, show_message=False):
+        """把界面上的小说参数(主题/类型/章节数/保存路径/内容指导等)写入 config.json"""
+        try:
+            def _int(var, default):
+                try:
+                    return int(str(var.get()).strip())
+                except Exception:
+                    return default
+
+            if hasattr(self, "char_inv_text"):
+                chars = self.char_inv_text.get("0.0", "end").strip()
+            else:
+                chars = self.characters_involved_var.get()
+
+            self.loaded_config["other_params"] = {
+                "topic": self.topic_text.get("0.0", "end").strip(),
+                "genre": self.genre_var.get(),
+                "num_chapters": _int(self.num_chapters_var, 10),
+                "word_number": _int(self.word_number_var, 3000),
+                "filepath": self.filepath_var.get(),
+                "chapter_num": self.chapter_num_var.get(),
+                "user_guidance": self.user_guide_text.get("0.0", "end").strip(),
+                "characters_involved": chars,
+                "key_items": self.key_items_var.get(),
+                "scene_location": self.scene_location_var.get(),
+                "time_constraint": self.time_constraint_var.get(),
+            }
+            saved = save_config(self.loaded_config, self.config_file)
+            if show_message:
+                if saved:
+                    messagebox.showinfo("提示", "小说参数已保存到 config.json")
+                else:
+                    messagebox.showerror("错误", "保存 config.json 失败")
+            return saved
+        except Exception as e:
+            logging.error(f"保存小说参数失败: {e}")
+            if show_message:
+                messagebox.showerror("错误", f"保存小说参数失败: {e}")
+            return False
+
+    def _on_close(self):
+        try:
+            self.save_novel_params_to_config(show_message=False)
+        except Exception:
+            pass
+        self.master.destroy()

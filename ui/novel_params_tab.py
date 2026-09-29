@@ -101,7 +101,7 @@ def build_novel_params_area(self, start_row=1):
 def build_optional_buttons_area(self, start_row=2):
     self.optional_btn_frame = ctk.CTkFrame(self.right_frame)
     self.optional_btn_frame.grid(row=start_row, column=0, sticky="ew", padx=5, pady=5)
-    self.optional_btn_frame.columnconfigure((0, 1, 2, 3, 4), weight=1)
+    self.optional_btn_frame.columnconfigure((0, 1, 2, 3, 4, 5), weight=1)
 
     self.btn_check_consistency = ctk.CTkButton(
         self.optional_btn_frame, text="一致性审校", command=self.do_consistency_check, 
@@ -133,6 +133,14 @@ def build_optional_buttons_area(self, start_row=2):
         font=("Microsoft YaHei", 12), width=100
     )
     self.role_library_btn.grid(row=0, column=4, padx=5, pady=5, sticky="ew")
+
+    # 保存小说参数按钮（主题/类型/章节数/路径/指导等 -> config.json）
+    self.save_params_btn = ctk.CTkButton(
+        self.optional_btn_frame, text="保存参数",
+        command=lambda: self.save_novel_params_to_config(show_message=True),
+        font=("Microsoft YaHei", 12), width=100
+    )
+    self.save_params_btn.grid(row=0, column=5, padx=5, pady=5, sticky="ew")
 
 def create_label_with_help_for_novel_params(self, parent, label_text, tooltip_key, row, column, font=None, sticky="e", padx=5, pady=5):
     frame = ctk.CTkFrame(parent)

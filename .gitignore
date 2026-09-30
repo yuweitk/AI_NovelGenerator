@@ -24,3 +24,4 @@ pyproject.toml
 *.bak2_20260929
 launch_test.log
 *.log
+*.bak_ref

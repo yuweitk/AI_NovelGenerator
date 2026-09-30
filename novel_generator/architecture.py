@@ -96,6 +96,12 @@ def Novel_architecture_generate(
             word_number=word_number,
             user_guidance=user_guidance  # 修复：添加内容指导
         )
+        # 注入参考书 + 技能（AnySpark-style，见 reference_manager.py）
+        try:
+            from reference_manager import get_generation_context_block
+            prompt_core += get_generation_context_block(flow="architecture")
+        except Exception as e:
+            logging.error(f"参考书/技能注入失败: {e}")
         core_seed_result = invoke_with_cleaning(llm_adapter, prompt_core)
         if not core_seed_result.strip():
             logging.warning("core_seed_prompt generation failed and returned empty.")

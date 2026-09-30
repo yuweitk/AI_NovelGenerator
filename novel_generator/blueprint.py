@@ -47,6 +47,16 @@ def limit_chapter_blueprint(blueprint_text: str, limit_chapters: int = 100) -> s
     selected = chapters[-limit_chapters:]
     return "\n\n".join(selected).strip()
 
+def _get_ref_block() -> str:
+    """参考书 + 技能注入块（AnySpark-style，见 reference_manager.py）"""
+    try:
+        from reference_manager import get_generation_context_block
+        return get_generation_context_block(flow="blueprint")
+    except Exception as e:
+        logging.error(f"参考书/技能注入失败: {e}")
+        return ""
+
+
 def Chapter_blueprint_generate(
     interface_format: str,
     api_key: str,
@@ -116,6 +126,7 @@ def Chapter_blueprint_generate(
                 m=current_end,
                 user_guidance=user_guidance  # 新增参数
             )
+            chunk_prompt += _get_ref_block()
             logging.info(f"Generating chapters [{current_start}..{current_end}] in a chunk...")
             chunk_result = invoke_with_cleaning(llm_adapter, chunk_prompt)
             if not chunk_result.strip():
@@ -137,6 +148,7 @@ def Chapter_blueprint_generate(
             number_of_chapters=number_of_chapters,
             user_guidance=user_guidance  # 新增参数
         )
+        prompt += _get_ref_block()
         blueprint_text = invoke_with_cleaning(llm_adapter, prompt)
         if not blueprint_text.strip():
             logging.warning("Chapter blueprint generation result is empty.")

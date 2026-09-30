@@ -493,7 +493,7 @@ def build_chapter_prompt(
         filtered_context = "（知识库处理失败）"
 
     # 返回最终提示词
-    return prompt_definitions.next_chapter_draft_prompt.format(
+    prompt = prompt_definitions.next_chapter_draft_prompt.format(
         user_guidance=user_guidance if user_guidance else "无特殊指导",
         global_summary=global_summary_text,
         previous_chapter_excerpt=previous_excerpt,
@@ -522,6 +522,25 @@ def build_chapter_prompt(
         next_chapter_summary=next_chapter_summary,
         filtered_context=filtered_context
     )
+
+    # 注入参考书 + 技能（AnySpark-style，见 reference_manager.py）
+    ref_block = ""
+    try:
+        from reference_manager import get_generation_context_block
+        ref_block = get_generation_context_block(
+            flow="chapter",
+            query=f"{chapter_role}；{chapter_summary}；{user_guidance}",
+            embedding_cfg={
+                "embedding_api_key": embedding_api_key,
+                "embedding_url": embedding_url,
+                "embedding_interface_format": embedding_interface_format,
+                "embedding_model_name": embedding_model_name,
+            },
+        )
+    except Exception as e:
+        logging.error(f"参考书/技能注入失败: {e}")
+    prompt = prompt + ref_block
+    return prompt
 
 def generate_chapter_draft(
     api_key: str,

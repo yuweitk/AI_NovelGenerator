@@ -35,6 +35,7 @@ from ui.character_tab import build_character_tab, load_character_state, save_cha
 from ui.summary_tab import build_summary_tab, load_global_summary, save_global_summary
 from ui.chapters_tab import build_chapters_tab, refresh_chapters_list, on_chapter_selected, load_chapter_content, save_current_chapter, prev_chapter, next_chapter
 from ui.other_settings import build_other_settings_tab
+from ui.reference_tab import build_reference_tab
 
 
 class NovelGeneratorGUI:
@@ -177,6 +178,7 @@ class NovelGeneratorGUI:
         build_summary_tab(self)
         build_chapters_tab(self)
         build_other_settings_tab(self)
+        build_reference_tab(self)
 
         # English Mode Button
         self.english_mode_btn = ctk.CTkButton(
